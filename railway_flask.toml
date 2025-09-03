@@ -1,0 +1,13 @@
+# Railway deployment configuration
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[build.watchPatterns]
+patterns = ["**/*.py", "requirements_flask.txt", "Dockerfile"]

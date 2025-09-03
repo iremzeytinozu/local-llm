@@ -1,0 +1,10 @@
+# Flask API + Ollama Chatbot
+# Tamamen ücretsiz deployment için optimize edilmiş
+
+flask==3.0.0
+requests==2.32.5
+gunicorn==21.2.0
+python-dotenv==1.0.0
+
+# Oracle Cloud ve Railway için ek gereksinimler
+Werkzeug==3.0.1
