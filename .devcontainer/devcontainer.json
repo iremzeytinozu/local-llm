@@ -1,0 +1,23 @@
+{
+  "name": "Ollama Chatbot Environment",
+  "image": "ubuntu:22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    }
+  },
+  "postCreateCommand": "curl -fsSL https://ollama.com/install.sh | sh && pip install flask flask-cors requests && echo 'Chatbot environment ready!'",
+  "forwardPorts": [5000, 11434],
+  "portsAttributes": {
+    "5000": {
+      "label": "Chatbot Web Interface",
+      "onAutoForward": "openPreview"
+    },
+    "11434": {
+      "label": "Ollama API"
+    }
+  }
+}
