@@ -14,6 +14,7 @@ import os
 import threading
 import time
 import subprocess
+import json
 from pyngrok import ngrok
 
 # Flask uygulaması kodunu oluştur
@@ -296,25 +297,76 @@ flask_thread.start()
 # Flask'ın başlamasını bekle
 time.sleep(10)
 
-# 7. Ngrok ile public URL oluştur
-print("🔗 Public URL oluşturuluyor...")
-public_url = ngrok.connect(5000)
+# 7. Ngrok token'ını ayarla ve tunnel oluştur
+print("🔗 Ngrok token ayarlanıyor...")
+ngrok.set_auth_token("32BjwByiVnrfoAikt8y5p7lEDwX_2eXRUQwSLE2zfZbZUBxP3")
 
-print("\n" + "="*60)
-print("🎉 CHATBOT HAZIR! 🎉")
-print("="*60)
-print(f"🔗 Chatbot URL: {public_url}")
-print("\n📋 Kullanım:")
-print("1. Yukarıdaki URL'yi tarayıcıda açın")
-print("2. Gerçek AI ile sohbet edin!")
-print("3. Colab oturumu açık olduğu sürece çalışır")
-print("\n💡 İpucu: Colab'ı arka planda bırakabilirsiniz")
-print("="*60)
+print("🔗 Public URL oluşturuluyor (Ngrok)...")
 
-# URL'yi sürekli göster
 try:
-    while True:
-        print(f"🔗 Aktif URL: {public_url}")
-        time.sleep(300)  # Her 5 dakikada bir hatırlat
-except KeyboardInterrupt:
-    print("\n👋 Chatbot durduruldu!")
+    # Önceki tunnel'ları temizle
+    ngrok.kill()
+    time.sleep(2)
+    
+    # Yeni tunnel oluştur
+    public_url = ngrok.connect(5000)
+    
+    print("\n" + "="*60)
+    print("🎉 CHATBOT HAZIR! 🎉")
+    print("="*60)
+    print(f"🔗 Chatbot URL: {public_url}")
+    print("\n📋 Kullanım:")
+    print("1. Yukarıdaki URL'yi tarayıcıda açın")
+    print("2. Gerçek AI ile sohbet edin!")
+    print("3. Colab oturumu açık olduğu sürece çalışır")
+    print("\n💡 İpucu: Colab'ı arka planda bırakabilirsiniz")
+    print("="*60)
+    
+    # Flask'ın çalışıp çalışmadığını test et
+    try:
+        import requests
+        test_response = requests.get("http://localhost:5000/health", timeout=5)
+        if test_response.status_code == 200:
+            print("✅ Flask sunucusu çalışıyor!")
+        else:
+            print("⚠️ Flask sunucusunda sorun olabilir")
+    except:
+        print("⚠️ Flask sunucusu test edilemedi")
+
+    # URL'yi sürekli göster ve durumu kontrol et
+    counter = 0
+    try:
+        while True:
+            counter += 1
+            print(f"\n🔗 Aktif URL: {public_url}")
+            print(f"✅ Chatbot çalışıyor! ({counter*5} dakika)")
+            
+            # Her 30 dakikada bir tunnel durumunu kontrol et
+            if counter % 6 == 0:
+                try:
+                    tunnels = ngrok.get_tunnels()
+                    if tunnels:
+                        print("🔄 Tunnel aktif, her şey yolunda!")
+                    else:
+                        print("⚠️ Tunnel kapanmış olabilir, yeniden başlatın")
+                except:
+                    print("⚠️ Tunnel durumu kontrol edilemedi")
+            
+            time.sleep(300)  # Her 5 dakikada bir hatırlat
+    except KeyboardInterrupt:
+        print("\n👋 Chatbot durduruldu!")
+
+except Exception as e:
+    print(f"\n❌ NGROK HATASI: {e}")
+    print("\n🔧 HIZLI ÇÖZÜM:")
+    print("Yeni Colab hücresinde şunu çalıştırın:")
+    print("""
+from pyngrok import ngrok
+ngrok.set_auth_token("32BjwByiVnrfoAikt8y5p7lEDwX_2eXRUQwSLE2zfZbZUBxP3")
+ngrok.kill()  # Eski tunnel'ları temizle
+new_url = ngrok.connect(5000)
+print(f"🔗 YENİ URL: {new_url}")
+    """)
+    print("\n🎯 ALTERNATİF:")
+    print("!npm install -g localtunnel")
+    print("!lt --port 5000")
