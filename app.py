@@ -4,12 +4,12 @@ from langchain_core.prompts import ChatPromptTemplate
 
 # Set page title and description
 st.set_page_config(
-    page_title="Local LLM Chatbot",
+    page_title="Test Chatbot",
     page_icon="🤖",
     layout="wide"
 )
 
-st.title("🤖 Local LLM Chatbot")
+st.title("🤖 Test Chatbot")
 st.markdown("Chat with your local LLM using Ollama!")
 
 # Settings in sidebar
